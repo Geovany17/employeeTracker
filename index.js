@@ -198,8 +198,8 @@ function addEmployee() {
       },
     ])
     .then(function (val) {
-      var roleId = selectRole().indexOf(val.role) - 1;
-      var managerId = selectManager().indexOf(val.choice) - 1;
+      var roleId = selectRole().indexOf(val.role) + 1;
+      var managerId = selectManager().indexOf(val.choice) + 1;
       connection.query(
         "INSERT INTO employee SET ?",
         {
