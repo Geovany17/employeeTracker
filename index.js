@@ -26,71 +26,77 @@ connection.connect(function (err) {
 });
 
 //=================================
-// Inquirer prompt and promise
+// Inquirer prompt
 //=================================
 
 function askQ() {
-  //=================================
-  // Prompt user to choose an option
-  //=================================
-
   inquirer
-    .prompt({
-      name: "action",
-      type: "list",
-      message: "MAIN MENU",
-      choices: [
-        "View all employees",
-        "View all employees by role",
-        "View all employees by department",
-        "View all employees by manager",
-        "Add employee",
-        "Add role",
-        "Add department",
-        "Update employee role",
-        "Update employee manager",
-        "Delete employee",
-        "Delete role",
-        "Delete department",
-        "View department budgets",
-      ],
-    })
-    .then((answer) => {
-      //=======================================
-      // Switch case depending on user option
-      //=======================================
-
-      switch (answer.action) {
-        case "View all employees":
+    .prompt([
+      {
+        type: "list",
+        message: "What would you like to do?",
+        name: "choice",
+        choices: [
+          "View All Employees?",
+          "View All Employee's By Roles?",
+          "View all Employees By Departments",
+          "Update Employee",
+          "Add Employee?",
+          "Add Role?",
+          "Add Department?",
+        ],
+      },
+    ])
+    .then(function (val) {
+      switch (val.choice) {
+        case "View All Employees?":
+          viewAllEmployees();
           break;
 
-        case "View all employees by department":
+        case "View All Employee's By Roles?":
+          viewAllRoles();
           break;
 
-        case "View all employees by role":
+        case "View all Employees By Department":
           break;
 
-        case "Add employee":
+        case "Add Employee?":
           break;
 
-        case "Add department":
+        case "Update Employee":
           break;
-        case "Add role":
+
+        case "Add Role?":
           break;
-        case "Update employee role":
-          break;
-        case "Update employee manager":
-          break;
-        case "View all employees by manager":
-          break;
-        case "Delete employee":
-          break;
-        case "View department budgets":
-          break;
-        case "Delete role":
-          break;
-        case "Delete department":
+
+        case "Add Department?":
           break;
       }
     });
+}
+
+//============= View All Employees ==========================//
+
+function viewAllEmployees() {
+  connection.query(
+    "SELECT employee.first_name, employee.last_name, role.title, role.salary, department.name, CONCAT(e.first_name, ' ' ,e.last_name) AS Manager FROM employee INNER JOIN role on role.id = employee.role_id INNER JOIN department on department.id = role.department_id left join employee e on employee.manager_id = e.id;",
+    function (err, res) {
+      if (err) throw err;
+      console.table(res);
+      askQ();
+    }
+  );
+}
+
+//============= View All Roles ==========================//
+
+function viewAllRoles() {
+  connection.query(
+    "SELECT employee.first_name, employee.last_name, role.title AS Title FROM employee JOIN role ON employee.role_id = role.id;",
+    function (err, res) {
+      if (err) throw err;
+      console.table(res);
+      askQ();
+    }
+  );
 }
